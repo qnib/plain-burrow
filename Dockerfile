@@ -1,9 +1,4 @@
-FROM qnib/alplain-golang
-
-ENV BURROW_ZK_HOST=zookeeper \
-    BURROW_LOGFILE=/var/log/burrow/burrow.log
-VOLUME ["/var/log/burrow"]
-
+FROM qnib/alplain-golang AS build
 
 ENV PATH $GOPATH/bin:$PATH
 
@@ -18,10 +13,11 @@ RUN go get github.com/klauspost/crc32
 RUN git clone https://github.com/linkedin/Burrow.git $GOPATH/src/github.com/linkedin/Burrow \
  && cd  $GOPATH/src/github.com/linkedin/Burrow \
  && gpm install \
- && go install \
- && mv $GOPATH/bin/Burrow $GOPATH/bin/burrow \
- && apk --no-cache del git wget go
+ && go install
 
+FROM qnib/alplain-init
+ENV BURROW_ZK_HOST=zookeeper
+COPY --from=build /usr/local/bin/Burrow /usr/bin/burrow
 COPY etc/burrow/burrow.cfg \
      etc/burrow/logging.cfg \
      /etc/burrow/
