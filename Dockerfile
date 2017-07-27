@@ -16,7 +16,8 @@ RUN git clone https://github.com/linkedin/Burrow.git $GOPATH/src/github.com/link
  && go install
 
 FROM qnib/alplain-init
-ENV BURROW_ZK_HOST=zookeeper
+ENV BURROW_ZK_HOST=zookeeper \
+    ENTRYPOINTS_DIR=/opt/qnib/entry
 COPY --from=build /usr/local/bin/Burrow /usr/bin/burrow
 COPY etc/burrow/burrow.cfg \
      etc/burrow/logging.cfg \
